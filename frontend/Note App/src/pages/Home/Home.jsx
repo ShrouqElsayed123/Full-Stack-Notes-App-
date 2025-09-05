@@ -1,8 +1,11 @@
+import NoteCard from "../../components/NoteCard/NoteCard";
 
 export default function Home() {
     return (
         <>
-            <p>Home</p>
+            <div className=" container mx-auto">
+                <NoteCard />
+            </div>
         </>
     )
 }
