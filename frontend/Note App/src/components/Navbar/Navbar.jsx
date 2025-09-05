@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { Menu, X } from "lucide-react"; // icons
 import { NotebookPen } from "lucide-react";
+import ProfileInfo from "../ProfileInfo/ProfileInfo";
+import SearchBar from "../SearchBar/SearchBar";
 
 export default function Navbar() {
     const [isOpen, setIsOpen] = useState(false);
@@ -14,13 +16,17 @@ export default function Navbar() {
 
                     <span>Notes</span></h1>
 
-                {/* Desktop Menu */}
                 <ul className="hidden md:flex gap-6 text-gray-700 font-medium">
-                    <li><a href="/" className="hover:text-blue-600">Home</a></li>
-                    <li><a href="/about" className="hover:text-blue-600">About</a></li>
-                    <li><a href="/services" className="hover:text-blue-600">Services</a></li>
-                    <li><a href="/contact" className="hover:text-blue-600">Contact</a></li>
+                    <SearchBar />
+
                 </ul>
+
+                {/* ProfileInfo */}
+                <ul className="hidden md:flex gap-6 text-gray-700 font-medium">
+                    <ProfileInfo />
+
+                </ul>
+
 
                 {/* Mobile Menu Button */}
                 <button
