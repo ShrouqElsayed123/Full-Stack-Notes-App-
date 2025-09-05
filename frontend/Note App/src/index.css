@@ -1,0 +1,31 @@
+@import url('https://fonts.googleapis.com/css2?family=Epunda+Slab:ital,wght@0,300..900;1,300..900&display=swap');
+@import "tailwindcss";
+
+@layer base {
+  html {
+    font-family: "Epunda Slab", "serif";
+
+  }
+}
+
+body {
+  background-color: #fdfeff;
+  overflow-x: hidden;
+}
+
+
+@theme {
+  --colors-mainColor: "#32a898";
+
+
+}
+
+
+.btn-filled {
+  @apply bg-mainColor text-white border-[1px] border-mainColor font-bold py-2 px-4 rounded transition-all duration-200 cursor-pointer;
+  @apply hover:bg-mainColor/80
+}
+
+.input {
+  @apply border border-gray-300 px-4 py-2 w-full rounded-sm focus:outline-none focus:ring-1 focus:ring-[#1c8057a6]
+}
