@@ -1,17 +1,15 @@
-import { Pin, Edit2, Trash2 } from "lucide-react";
+import { Pin, Edit2, Trash2, PinOff } from "lucide-react";
+import { useEffect, useState } from "react";
+import NoteEditModal from "../NoteEditModal/NoteEditModal";
 
-const randomColor = () => {
-    const colors = [
-        "bg-red-50",
-        "bg-green-50",
-        "bg-blue-50",
-        "bg-yellow-50",
-        "bg-purple-50",
-        "bg-pink-50",
-    ];
-    return colors[Math.floor(Math.random() * colors.length)];
-};
-
+const colors = [
+    "bg-red-50",
+    "bg-green-50",
+    "bg-blue-50",
+    "bg-yellow-50",
+    "bg-purple-50",
+    "bg-pink-50",
+];
 
 const initialNotes = [
     {
@@ -64,68 +62,91 @@ const initialNotes = [
     },
 ];
 export default function NoteCard() {
+    const [notes, setNotes] = useState(() => {
+        // 👇 أول مرة الكومبوننت يشتغل → نحاول نقرأ من localStorage
+        const saved = localStorage.getItem("notes");
+        return saved ? JSON.parse(saved) : initialNotes;
+    });
+
+    // 👇 أي وقت notes تتغير → نحفظ في localStorage
+    useEffect(() => {
+        localStorage.setItem("notes", JSON.stringify(notes));
+    }, [notes]);
+    //   pin 
+
+    const togglePin = (id) => {
+        setNotes(prev =>
+            prev.map(note => (note.id === id ? { ...note, pinned: !note.pinned } : note))
+        );
+    };
+
+    // حماية لو notes مش array لأي سبب
+    const ordered = Array.isArray(notes)
+        ? [...notes.filter(n => n.pinned), ...notes.filter(n => !n.pinned)]
+        : [];
+
+
+    // edittttttttttttttt
+    const [isModalOpen, setIsModalOpen] = useState(false)
+    const [savedNote, setSavedNote] = useState(null)
+    const handleEdit = (note) => {
+        setIsModalOpen(true);
+        setSavedNote(note)
+    }
     return (
         <>
 
             <div>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3  gap-3">
-                    {
-                        initialNotes.map((note) => (
-                            <div key={note.id}
-                                className={`rounded-md shadow-sm  p-4 flex flex-col justify-between ${randomColor()}`}
-                            >
-                                {/* header & pin  */}
-                                <div className="flex justify-between items-center">
-                                    <div>
-                                        <h1>{note.title}</h1>
-                                        <p>{note.date}</p>
-                                    </div>
-                                    <button>
-                                        <Pin size={16} />
-                                    </button>
-                                </div>
-
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                    {ordered.map((note) => (
+                        <div key={note.id}
+                            className={`rounded-md shadow-sm p-4 flex flex-col justify-between ${colors[note.id % colors.length]}`}
+                        >
+                            {/* header & pin */}
+                            <div className="flex justify-between items-center">
                                 <div>
-                                    <p>{note.content}</p>
+                                    <p>{note.id}</p>
+                                    <h1>{note.title}</h1>
+                                    <p>{note.date}</p>
                                 </div>
 
-                                {/* tags & actions  */}
-                                {/* Tags */}
-                                <div className="mt-2 flex flex-wrap gap-1">
-                                    {note.tags.map((tag, index) => (
-                                        <span
-                                            key={index}
-                                            className="text-xs text-mainColor bg-blue-100 px-2 py-0.5 rounded-full"
-                                        >
-                                            #{tag}
-                                        </span>
-                                    ))}
-                                </div>
-
-
-                                {/* Actions */}
-                                <div className="flex justify-end gap-2 mt-3">
-                                    <button
-
-                                        className="text-gray-400 hover:text-gray-600"
-                                    >
-                                        <Edit2 size={16} />
-                                    </button>
-                                    <button
-
-                                        className="text-gray-400 hover:text-red-500"
-                                    >
-                                        <Trash2 size={16} />
-                                    </button>
-                                </div>
-
+                                {/* مهم: type="button" علشان مايعملش submit */}
+                                <button type="button" onClick={() => togglePin(note.id)}>
+                                    {note.pinned ? <PinOff size={16} /> : <Pin size={16} />}
+                                </button>
                             </div>
-                        ))
-                    }
 
+                            <div>
+                                <p>{note.content}</p>
+                            </div>
+
+                            <div className="mt-2 flex flex-wrap gap-1">
+                                {note.tags.map((tag, i) => (
+                                    <span key={i} className="text-xs text-mainColor bg-blue-100 px-2 py-0.5 rounded-full">
+                                        #{tag}
+                                    </span>
+                                ))}
+                            </div>
+
+                            <div className="flex justify-end gap-2 mt-3">
+                                <button type="button" className="text-gray-400 hover:text-gray-600"
+                                    onClick={() => {
+                                        handleEdit(note)
+                                    }}
+                                ><Edit2 size={16} /></button>
+                                <button type="button" className="text-gray-400 hover:text-red-500"><Trash2 size={16} /></button>
+                            </div>
+                        </div>
+                    ))}
                 </div>
 
             </div>
+
+
+            <NoteEditModal
+                isOpen={isModalOpen}
+                note={savedNote}
+            />
         </>
     )
 }
